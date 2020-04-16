@@ -7,14 +7,26 @@ const canvasController = (() => {
         ctx.fillStyle = color;
         ctx.fillRect(0, 0, canvas.width, canvas.height);
     }
-
     function createSquare(color, px, py) {
         ctx.fillStyle = color;
         ctx.fillRect(px, py, 20, 20)
     }
+    function borders(){
+        for(let i=0; i < 500; i+=20)
+        {
+            createSquare('grey',i,0);
+            createSquare('grey',0,i);
+        }
+        for(let i=0; i < 500; i+=20)
+        {
+            createSquare('grey',i,480);
+            createSquare('grey',480,i);
+        }
+    }
     return {
         setBackground,
         createSquare,
+        borders,
     }
 })()
 
@@ -60,19 +72,23 @@ const Snake = () => {
     const changeDirection = (e) => {
         switch (e.code) {
             case ('ArrowLeft'):
-                dx = (-1 * vel);
+                if(dx != vel)
+                    dx = (-1 * vel);
                 dy = 0;
                 break;
             case 'ArrowRight':
-                dx = (vel);
+                if(dx != (-1*vel))
+                    dx = (vel);
                 dy = 0;
                 break;
             case 'ArrowUp':
-                dy = (-1 * vel);
+                if(dy != vel)
+                    dy = (-1 * vel);
                 dx = 0;
                 break;
             case 'ArrowDown':
-                dy = (vel);
+                if(dy != (-1*vel))
+                    dy = (vel);
                 dx = 0;
                 break;
             default:
@@ -115,12 +131,8 @@ const Snake = () => {
             ate = true;            
         }
             
-
-
         // draw in the head
         canvasController.createSquare('#00ff55', snake.getHeadX(), snake.getHeadY());
-
-
 
     }
 
@@ -140,6 +152,7 @@ let snake = Snake();
 
 window.addEventListener('keydown', snake.changeDirection);
 canvasController.setBackground();
+canvasController.borders();
 
 setInterval(() => { game.play() }, 50);
 
