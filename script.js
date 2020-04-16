@@ -2,6 +2,8 @@ const canvas = document.querySelector("#snake-canvas");
 let ctx = canvas.getContext('2d');
 "use strict"
 
+
+
 const canvasController = (() => {
     function setBackground(color = 'black') {
         ctx.fillStyle = color;
@@ -39,7 +41,7 @@ const game = (() => {
 
 
     function play() {
-        snake.move();
+        setInterval(()=>{snake.move()}, 80);
     }
     function createApple() {
         ax = Math.floor(Math.random() * 23) * 20 + 20
@@ -64,10 +66,12 @@ const Snake = () => {
     let dy = 0;
     let trail = [headX, headY];
     let ate = true;
+    let alive = true;
 
 
     const getHeadX = () => headX;
     const getHeadY = () => headY;
+    const getTrail = () => trail;
 
     const changeDirection = (e) => {
         switch (e.code) {
@@ -97,11 +101,13 @@ const Snake = () => {
         }
     }
     const move = () => {
+        if(!alive)
+            return;
+
+
         if (ate) {
             game.createApple();
             ate = false;
-            console.log('oi');
-            
         }
         else{
             canvasController.createSquare('black', trail.shift(), trail.shift());
@@ -124,14 +130,26 @@ const Snake = () => {
         else if (headY < 1) {
             headY = 460;
         }
+
+        for(let i=0; i < snake.getTrail().length; i+=2)
+        {
+            if(headX == snake.getTrail()[i]&&
+               headY == snake.getTrail()[i+1] )
+            {    
+                console.log('moreeeu');
+                
+                alive = false;
+            }
+                
+        }
+
+
         trail.push(headX, headY);
 
         if(headX == game.getAppleX() && headY == game.getAppleY())
         {
             ate = true;            
         }
-            
-        // draw in the head
         canvasController.createSquare('#00ff55', snake.getHeadX(), snake.getHeadY());
 
     }
@@ -140,7 +158,9 @@ const Snake = () => {
         changeDirection,
         getHeadX,
         getHeadY,
+        getTrail,
         move,
+
     }
 }
 
@@ -154,7 +174,7 @@ window.addEventListener('keydown', snake.changeDirection);
 canvasController.setBackground();
 canvasController.borders();
 
-setInterval(() => { game.play() }, 50);
+game.play();
 
 
 
