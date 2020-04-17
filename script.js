@@ -1,10 +1,16 @@
-const canvas = document.querySelector("#snake-canvas");
-let ctx = canvas.getContext('2d');
 "use strict"
+const canvas = document.querySelector("#snake-canvas");
+const body = document.querySelector('body');
+body.style.display = 'flex';
+body.style.justifyContent = 'center'
+body.style.alignItems = 'center'
+
+let ctx = canvas.getContext('2d');
 
 
 
-const canvasController = (() => {
+
+const displayController = (() => {
     function setBackground(color = 'black') {
         ctx.fillStyle = color;
         ctx.fillRect(0, 0, canvas.width, canvas.height);
@@ -25,10 +31,44 @@ const canvasController = (() => {
             createSquare('grey',480,i);
         }
     }
+    function restartButton(){
+
+        const restartBtn = document.createElement('button');
+        restartBtn.textContent           = 'RESTART';
+        restartBtn.style.color           = 'white';
+        restartBtn.style.backgroundColor = 'black';
+        restartBtn.style.borders         = '4px solid grey';
+        restartBtn.style.width           = '140px';
+        restartBtn.style.height          = '40px';
+        restartBtn.style.position        = 'absolute';
+        restartBtn.style.justifyContent  = 'center';
+        restartBtn.style.outline         = 'none';
+        restartBtn.style.display         = 'block';
+        
+        body.appendChild(restartBtn);
+
+        restartBtn.addEventListener('click', ()=>{
+
+            snake.setAlive(true);
+            snake.setAte(true);
+            snake.setVel(20);
+            snake.setHeadX(100);
+            snake.setHeadY(100);
+            snake.setTrail(100,100);
+
+            displayController.setBackground();
+            displayController.borders();
+
+            restartBtn.style.display         = 'none';
+        });
+
+
+    }
     return {
         setBackground,
         createSquare,
         borders,
+        restartButton,
     }
 })()
 
@@ -47,7 +87,7 @@ const game = (() => {
         ax = Math.floor(Math.random() * 23) * 20 + 20
         ay = Math.floor(Math.random() * 23) * 20 + 20
 
-        canvasController.createSquare('red', ax, ay);
+        displayController.createSquare('red', ax, ay);
     }
     return {
         play,
@@ -72,6 +112,13 @@ const Snake = () => {
     const getHeadX = () => headX;
     const getHeadY = () => headY;
     const getTrail = () => trail;
+
+    const setAlive = (al)=> {alive=al};
+    const setTrail = (TrX, TrY) => {trail = [TrX, TrY]};
+    const setVel   = (v)=> {vel = v};
+    const setHeadX = (x)=> {headX = x};
+    const setHeadY = (y)=> {headY = y};
+    const setAte   = (a)=> ate = a;
 
     const changeDirection = (e) => {
         switch (e.code) {
@@ -101,16 +148,15 @@ const Snake = () => {
         }
     }
     const move = () => {
+        
         if(!alive)
             return;
-
-
         if (ate) {
             game.createApple();
             ate = false;
         }
         else{
-            canvasController.createSquare('black', trail.shift(), trail.shift());
+            displayController.createSquare('black', trail.shift(),trail.shift());
         }
         
         
@@ -137,7 +183,7 @@ const Snake = () => {
                headY == snake.getTrail()[i+1] )
             {    
                 console.log('moreeeu');
-                
+                displayController.restartButton();
                 alive = false;
             }
                 
@@ -150,7 +196,7 @@ const Snake = () => {
         {
             ate = true;            
         }
-        canvasController.createSquare('#00ff55', snake.getHeadX(), snake.getHeadY());
+        displayController.createSquare('#00ff55', snake.getHeadX(), snake.getHeadY());
 
     }
 
@@ -160,7 +206,12 @@ const Snake = () => {
         getHeadY,
         getTrail,
         move,
-
+        setAlive,
+        setTrail,
+        setVel,
+        setHeadX,
+        setHeadY,
+        setAte,
     }
 }
 
@@ -171,8 +222,8 @@ const Snake = () => {
 let snake = Snake();
 
 window.addEventListener('keydown', snake.changeDirection);
-canvasController.setBackground();
-canvasController.borders();
+displayController.setBackground();
+displayController.borders();
 
 game.play();
 
