@@ -1,13 +1,7 @@
 "use strict"
 const canvas = document.querySelector("#snake-canvas");
 let ctx = canvas.getContext('2d');
-
 const body = document.querySelector('body');
-body.style.display = 'flex';
-body.style.justifyContent = 'center'
-body.style.alignItems = 'center'
-
-
 const displayController = (() => {
     function setBackground(color = 'black') {
         ctx.fillStyle = color;
@@ -16,6 +10,20 @@ const displayController = (() => {
     function createSquare(color, px, py) {
         ctx.fillStyle = color;
         ctx.fillRect(px, py, 20, 20)
+    }
+    function writePontuation(score){
+        createSquare('grey',200, 0);
+        createSquare('grey',220, 0);
+        createSquare('grey',240, 0);
+        createSquare('grey',260, 0);
+        createSquare('grey',280, 0);
+        createSquare('grey',300, 0);
+        
+
+        ctx.beginPath();
+        ctx.font = '20px Arial';
+        ctx.fillStyle = 'red'
+        ctx.fillText(`Score: ${score}`, 200, 20)
     }
     function borders() {
         for (let i = 0; i < 500; i += 20) {
@@ -27,35 +35,29 @@ const displayController = (() => {
             createSquare('grey', 480, i);
         }
     }
-    function restartButton() {
+    function restartButton(game) {
 
         const restartBtn = document.createElement('button');
-        restartBtn.textContent = 'RESTART';
-        restartBtn.style.color = 'white';
-        restartBtn.style.backgroundColor = 'black';
-        restartBtn.style.borders = '4px solid grey';
-        restartBtn.style.width = '140px';
-        restartBtn.style.height = '40px';
-        restartBtn.style.position = 'absolute';
-        restartBtn.style.justifyContent = 'center';
-        restartBtn.style.outline = 'none';
-        restartBtn.style.display = 'block';
-
+        restartBtn.classList.add('restart-button')
+        restartBtn.textContent = 'restart';
         body.appendChild(restartBtn);
+        
+        writePontuation(game.pontuation);
+        
 
         restartBtn.addEventListener('click', () => {
-
             snake.setAlive(true);
             snake.setAte(true);
             snake.setVel(20);
             snake.setHeadX(100);
             snake.setHeadY(100);
             snake.setTrail(100, 100);
+            game.pontuation = 0;
 
             displayController.setBackground();
             displayController.borders();
 
-            restartBtn.style.display = 'none';
+            restartBtn.classList.add('hide');
         });
 
 
@@ -65,12 +67,14 @@ const displayController = (() => {
         createSquare,
         borders,
         restartButton,
+        writePontuation,
     }
 })()
 
 const game = (() => {
 
     let ax, ay;
+    let pontuation = 0;
 
     const getAppleX = () => ax;
     const getAppleY = () => ay;
@@ -80,7 +84,7 @@ const game = (() => {
         setInterval(() => { snake.move() }, 80);
     }
     function createApple() {
-        let notValidPlace ;
+        let notValidPlace;
         do {
             notValidPlace = false;
             ax = Math.floor(Math.random() * 23) * 20 + 20
@@ -90,12 +94,8 @@ const game = (() => {
                     ay == snake.getTrail()[i + 1]) {
                     notValidPlace = true;
                 }
-
             }
-            console.log('oi');
-            
-        }while(notValidPlace)
-
+        } while (notValidPlace)
 
         displayController.createSquare('red', ax, ay);
     }
@@ -104,6 +104,7 @@ const game = (() => {
         createApple,
         getAppleX,
         getAppleY,
+        pontuation,
     }
 })();
 
@@ -169,8 +170,6 @@ const Snake = () => {
             displayController.createSquare('black', trail.shift(), trail.shift());
         }
 
-
-
         headX += dx;
         headY += dy;
 
@@ -190,18 +189,17 @@ const Snake = () => {
         for (let i = 0; i < snake.getTrail().length; i += 2) {
             if (headX == snake.getTrail()[i] &&
                 headY == snake.getTrail()[i + 1]) {
-                console.log('moreeeu');
-                displayController.restartButton();
+                displayController.restartButton(game);
                 alive = false;
             }
 
         }
-
-
         trail.push(headX, headY);
 
         if (headX == game.getAppleX() && headY == game.getAppleY()) {
             ate = true;
+            game.pontuation += 10;
+            displayController.writePontuation(game.pontuation);
         }
         displayController.createSquare('#00ff55', snake.getHeadX(), snake.getHeadY());
 
