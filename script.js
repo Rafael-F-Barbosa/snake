@@ -35,39 +35,91 @@ const displayController = (() => {
             createSquare('grey', 480, i);
         }
     }
-    function restartButton(game) {
+    function endGame(game) {
+        const main = document.querySelector('main');
+        
+        let saved = false;
+        // save score button
+        const saveBtn = document.createElement('button');
+        saveBtn.classList.add('save-button')
+        saveBtn.textContent = 'save';
 
+        let inputName = null;
+
+        saveBtn.addEventListener('click',()=>{
+
+            inputName = document.createElement('input');
+            inputName.placeholder = 'Player Name';
+            inputName.classList   = 'save-input';
+
+
+            const parent = saveBtn.parentElement;
+            parent.replaceChild(inputName, saveBtn);
+
+            inputName.addEventListener('keydown', (e)=>{
+                if(e.key == 'Enter')
+                {   
+                    if(inputName.value !== '' && !saved){
+                        Firebase.addScore(inputName.value, game.pontuation);
+                        saved = true;
+                        
+                        restartBtn.classList.add('hide');
+                        inputName.classList.add('hide');
+
+
+                        displayController.setBackground();
+                        displayController.borders();
+                        game.restart(snake);
+
+                    }
+                }
+            })
+        })
+
+
+        main.appendChild(saveBtn);
+
+        // restart button
+        
         const restartBtn = document.createElement('button');
         restartBtn.classList.add('restart-button')
         restartBtn.textContent = 'restart';
-        body.appendChild(restartBtn);
+        main.appendChild(restartBtn);
         
         writePontuation(game.pontuation);
         
 
         restartBtn.addEventListener('click', () => {
-            snake.setAlive(true);
-            snake.setAte(true);
-            snake.setVel(20);
-            snake.setHeadX(100);
-            snake.setHeadY(100);
-            snake.setTrail(100, 100);
-            game.pontuation = 0;
+            
+            game.restart(snake);
 
             displayController.setBackground();
             displayController.borders();
 
             restartBtn.classList.add('hide');
+            if(saveBtn)
+                saveBtn.classList.add('hide');
+            if(inputName)
+                inputName.classList.add('hide');
+            
         });
 
 
     }
+    function showScores(player){
+        const scores = document.querySelector('ol');
+        const li = document.createElement('li');
+        li.textContent = player.PlayerName + ' '+ player.PlayerScore +' pts.';
+        scores.appendChild(li)
+    }
+
     return {
         setBackground,
         createSquare,
         borders,
-        restartButton,
+        endGame,
         writePontuation,
+        showScores,
     }
 })()
 
@@ -79,6 +131,15 @@ const game = (() => {
     const getAppleX = () => ax;
     const getAppleY = () => ay;
 
+    function restart(snake){
+        snake.setAlive(true);
+        snake.setAte(true);
+        snake.setVel(20);
+        snake.setHeadX(100);
+        snake.setHeadY(100);
+        snake.setTrail(100, 100);
+        game.pontuation = 0;
+    }
 
     function play() {
         setInterval(() => { snake.move() }, 80);
@@ -105,6 +166,7 @@ const game = (() => {
         getAppleX,
         getAppleY,
         pontuation,
+        restart,
     }
 })();
 
@@ -189,7 +251,7 @@ const Snake = () => {
         for (let i = 0; i < snake.getTrail().length; i += 2) {
             if (headX == snake.getTrail()[i] &&
                 headY == snake.getTrail()[i + 1]) {
-                displayController.restartButton(game);
+                displayController.endGame(game);
                 alive = false;
             }
 
@@ -220,6 +282,40 @@ const Snake = () => {
     }
 }
 
+const Firebase  = ( ()=>{
+    function showScores(){
+        // static adition
+        // db.collection('snake-scores').get().then( (snapshot)=>{
+        //     snapshot.docs.forEach( (doc)=>{
+        //         displayController.showScores(doc.data())
+        //     })
+        // })
+        db.collection('snake-scores').limit(10).orderBy('OrderAux').onSnapshot( snapshot => {
+            let changes = snapshot.docChanges();
+            changes.forEach( change=>{
+                if(change.type == 'added'){
+                    displayController.showScores(change.doc.data());
+                }
+            })
+        })
+
+
+    }
+    function addScore(name, score){
+        if(!name && !score)
+            return;
+        db.collection('snake-scores').add({
+            PlayerName: name,
+            PlayerScore: score,
+            OrderAux: 1000000000-score,
+        })
+    }
+    
+    return {
+        showScores,
+        addScore,
+    }
+}) ()
 
 let snake = Snake();
 
@@ -229,5 +325,6 @@ displayController.borders();
 
 game.play();
 
+Firebase.showScores();
 
 

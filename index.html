@@ -9,9 +9,43 @@
 </head>
 
 <body>
-    <canvas id="snake-canvas" width="500px" height="500px"> </canvas>
+    <header>
+        <h1>Snake</h1>
+    </header>
+    <main>
+        <canvas id="snake-canvas" width="500px" height="500px"> </canvas>
 
+        <ol>
+            <h2> Best Scores</h2>
+        </ol>
+    </main>
 </body>
+
+
+<!-- The core Firebase JS SDK is always required and must be listed first -->
+<script src="https://www.gstatic.com/firebasejs/7.14.2/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/7.14.2/firebase-firestore.js"></script>
+
+<!-- TODO: Add SDKs for Firebase products that you want to use
+     https://firebase.google.com/docs/web/setup#available-libraries -->
+
+<script>
+  // Your web app's Firebase configuration
+  var firebaseConfig = {
+    apiKey: "AIzaSyAJfOQnPHH7KRv9TEiF4XvQ8wigzEVfgag",
+    authDomain: "snake-44a8c.firebaseapp.com",
+    databaseURL: "https://snake-44a8c.firebaseio.com",
+    projectId: "snake-44a8c",
+    storageBucket: "snake-44a8c.appspot.com",
+    messagingSenderId: "856391818832",
+    appId: "1:856391818832:web:dd5e2b9160dbd5e0c6bb55"
+  };
+  // Initialize Firebase
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.firestore();
+</script>
+
+
 <script src="script.js"></script>
 
 </html>
