@@ -11,14 +11,14 @@ const displayController = (() => {
         ctx.fillStyle = color;
         ctx.fillRect(px, py, 20, 20)
     }
-    function writePontuation(score){
-        createSquare('grey',200, 0);
-        createSquare('grey',220, 0);
-        createSquare('grey',240, 0);
-        createSquare('grey',260, 0);
-        createSquare('grey',280, 0);
-        createSquare('grey',300, 0);
-        
+    function writePontuation(score) {
+        createSquare('grey', 200, 0);
+        createSquare('grey', 220, 0);
+        createSquare('grey', 240, 0);
+        createSquare('grey', 260, 0);
+        createSquare('grey', 280, 0);
+        createSquare('grey', 300, 0);
+
 
         ctx.beginPath();
         ctx.font = '20px Arial';
@@ -37,7 +37,7 @@ const displayController = (() => {
     }
     function endGame(game) {
         const main = document.querySelector('main');
-        
+
         let saved = false;
         // save score button
         const saveBtn = document.createElement('button');
@@ -46,23 +46,22 @@ const displayController = (() => {
 
         let inputName = null;
 
-        saveBtn.addEventListener('click',()=>{
+        saveBtn.addEventListener('click', () => {
 
             inputName = document.createElement('input');
             inputName.placeholder = 'Player Name';
-            inputName.classList   = 'save-input';
+            inputName.classList = 'save-input';
 
 
             const parent = saveBtn.parentElement;
             parent.replaceChild(inputName, saveBtn);
 
-            inputName.addEventListener('keydown', (e)=>{
-                if(e.key == 'Enter')
-                {   
-                    if(inputName.value !== '' && !saved){
+            inputName.addEventListener('keydown', (e) => {
+                if (e.key == 'Enter') {
+                    if (inputName.value !== '' && !saved) {
                         Firebase.addScore(inputName.value, game.pontuation);
                         saved = true;
-                        
+
                         restartBtn.classList.add('hide');
                         inputName.classList.add('hide');
 
@@ -80,36 +79,36 @@ const displayController = (() => {
         main.appendChild(saveBtn);
 
         // restart button
-        
+
         const restartBtn = document.createElement('button');
         restartBtn.classList.add('restart-button')
         restartBtn.textContent = 'restart';
         main.appendChild(restartBtn);
-        
+
         writePontuation(game.pontuation);
-        
+
 
         restartBtn.addEventListener('click', () => {
-            
+
             game.restart(snake);
 
             displayController.setBackground();
             displayController.borders();
 
             restartBtn.classList.add('hide');
-            if(saveBtn)
+            if (saveBtn)
                 saveBtn.classList.add('hide');
-            if(inputName)
+            if (inputName)
                 inputName.classList.add('hide');
-            
+
         });
 
 
     }
-    function showScores(player){
+    function showScores(player) {
         const scores = document.querySelector('ol');
         const li = document.createElement('li');
-        li.textContent = player.PlayerName + ' '+ player.PlayerScore +' pts.';
+        li.textContent = player.PlayerName + ' ' + player.PlayerScore + ' pts.';
         scores.appendChild(li)
     }
 
@@ -131,7 +130,7 @@ const game = (() => {
     const getAppleX = () => ax;
     const getAppleY = () => ay;
 
-    function restart(snake){
+    function restart(snake) {
         snake.setAlive(true);
         snake.setAte(true);
         snake.setVel(20);
@@ -142,7 +141,7 @@ const game = (() => {
     }
 
     function play() {
-        setInterval(() => { snake.move() }, 80);
+        setInterval(() => { snake.move() }, 120);
     }
     function createApple() {
         let notValidPlace;
@@ -180,6 +179,7 @@ const Snake = () => {
     let trail = [headX, headY];
     let ate = true;
     let alive = true;
+    let moveComplete = true;
 
 
     const getHeadX = () => headX;
@@ -194,30 +194,53 @@ const Snake = () => {
     const setAte = (a) => ate = a;
 
     const changeDirection = (e) => {
-        switch (e.code) {
-            case ('ArrowLeft'):
-                if (dx != vel)
-                    dx = (-1 * vel);
-                dy = 0;
-                break;
-            case 'ArrowRight':
-                if (dx != (-1 * vel))
-                    dx = (vel);
-                dy = 0;
-                break;
-            case 'ArrowUp':
-                if (dy != vel)
-                    dy = (-1 * vel);
-                dx = 0;
-                break;
-            case 'ArrowDown':
-                if (dy != (-1 * vel))
-                    dy = (vel);
-                dx = 0;
-                break;
-            default:
-                console.log('Not a control key.');
-                break;
+        
+        if (e.code === 'ArrowLeft' && moveComplete) {
+            if (dx != vel) {
+                dx = (-1 * vel);
+                console.log('left')
+                moveComplete = false;
+            }
+            else{
+                console.log('Sem ré!')
+            }
+            dy = 0;
+            
+        }
+        else if (e.code === 'ArrowRight' && moveComplete) {
+            if (dx != (-1 * vel))
+            {
+                dx = (vel)
+                console.log('right')
+                moveComplete = false;
+            }else{
+                console.log('Sem ré!')
+            }
+            dy = 0;
+            
+        }
+        else if (e.code === 'ArrowUp' && moveComplete) {
+            if (dy != vel){
+                dy = (-1 * vel);
+                console.log('up');
+                moveComplete = false;
+            }else{
+                console.log('Sem ré!')
+            }
+            dx = 0;
+        }
+        else if (e.code === 'ArrowDown' && moveComplete) {
+            if (dy != (-1 * vel)){
+                dy = (vel);
+                console.log('down');
+                moveComplete = false;
+            }else{
+                console.log('Sem ré!')
+            }
+            dx = 0;
+        }
+        else {
+            console.log('Invalid key')
         }
     }
     const move = () => {
@@ -248,6 +271,8 @@ const Snake = () => {
             headY = 460;
         }
 
+        moveComplete = true;
+
         for (let i = 0; i < snake.getTrail().length; i += 2) {
             if (headX == snake.getTrail()[i] &&
                 headY == snake.getTrail()[i + 1]) {
@@ -263,7 +288,7 @@ const Snake = () => {
             game.pontuation += 10;
             displayController.writePontuation(game.pontuation);
         }
-        displayController.createSquare('#00ff55', snake.getHeadX(), snake.getHeadY());
+        displayController.createSquare('#2ae600', snake.getHeadX(), snake.getHeadY());
 
     }
 
@@ -282,18 +307,18 @@ const Snake = () => {
     }
 }
 
-const Firebase  = ( ()=>{
-    function showScores(){
+const Firebase = (() => {
+    function showScores() {
         // static adition
         // db.collection('snake-scores').get().then( (snapshot)=>{
         //     snapshot.docs.forEach( (doc)=>{
         //         displayController.showScores(doc.data())
         //     })
         // })
-        db.collection('snake-scores').limit(10).orderBy('OrderAux').onSnapshot( snapshot => {
+        db.collection('snake-scores').limit(10).orderBy('OrderAux').onSnapshot(snapshot => {
             let changes = snapshot.docChanges();
-            changes.forEach( change=>{
-                if(change.type == 'added'){
+            changes.forEach(change => {
+                if (change.type == 'added') {
                     displayController.showScores(change.doc.data());
                 }
             })
@@ -301,25 +326,29 @@ const Firebase  = ( ()=>{
 
 
     }
-    function addScore(name, score){
-        if(!name && !score)
+    function addScore(name, score) {
+        if (!name && !score)
             return;
         db.collection('snake-scores').add({
             PlayerName: name,
             PlayerScore: score,
-            OrderAux: 1000000000-score,
+            OrderAux: 1000000000 - score,
         })
     }
-    
+
     return {
         showScores,
         addScore,
     }
-}) ()
+})()
 
 let snake = Snake();
 
-window.addEventListener('keydown', snake.changeDirection);
+window.addEventListener('keydown', (e)=>{
+    console.log('key press');
+    snake.changeDirection(e);
+    
+});
 displayController.setBackground();
 displayController.borders();
 
