@@ -11,28 +11,28 @@ const displayController = (() => {
         ctx.fillStyle = color;
         ctx.fillRect(px, py, 20, 20)
     }
-    function writePontuation(score) {
-        createSquare('grey', 200, 0);
-        createSquare('grey', 220, 0);
-        createSquare('grey', 240, 0);
-        createSquare('grey', 260, 0);
-        createSquare('grey', 280, 0);
-        createSquare('grey', 300, 0);
+    function writePontuation(score=0) {
+        createSquare('#363636', 200, 0);
+        createSquare('#363636', 220, 0);
+        createSquare('#363636', 240, 0);
+        createSquare('#363636', 260, 0);
+        createSquare('#363636', 280, 0);
+        createSquare('#363636', 300, 0);
 
 
         ctx.beginPath();
         ctx.font = '20px Arial';
-        ctx.fillStyle = 'red'
-        ctx.fillText(`Score: ${score}`, 200, 20)
+        ctx.fillStyle = '#2ae600'
+        ctx.fillText(`Score: ${score}`, 200, 18)
     }
     function borders() {
         for (let i = 0; i < 500; i += 20) {
-            createSquare('grey', i, 0);
-            createSquare('grey', 0, i);
+            createSquare('#363636', i, 0);
+            createSquare('#363636', 0, i);
         }
         for (let i = 0; i < 500; i += 20) {
-            createSquare('grey', i, 480);
-            createSquare('grey', 480, i);
+            createSquare('#363636', i, 480);
+            createSquare('#363636', 480, i);
         }
     }
     function endGame(game) {
@@ -126,6 +126,7 @@ const game = (() => {
 
     let ax, ay;
     let pontuation = 0;
+    let gameVel = 65;
 
     const getAppleX = () => ax;
     const getAppleY = () => ay;
@@ -141,7 +142,8 @@ const game = (() => {
     }
 
     function play() {
-        setInterval(() => { snake.move() }, 120);
+        displayController.writePontuation();
+        setInterval(() => { snake.move() }, gameVel);
     }
     function createApple() {
         let notValidPlace;

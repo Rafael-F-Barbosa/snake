@@ -3,7 +3,9 @@ body{
     flex-direction: column;
     align-items: center;
     width: 90vw;
-    
+    background-color: #778899;
+
+    font-family: 'Arvo', Georgia, Times;
 }
 main{
     display: grid;
@@ -12,7 +14,7 @@ main{
 button{
     color: white;
     background-color: black;
-    border: 4px solid grey;
+    border: 4px solid #363636;
     width: 140px;
     height: 40px;
     position: absolute;
@@ -20,10 +22,31 @@ button{
     margin-top: 210px;
     outline: none;
 }
+h1{
+    color:#363636;
+    font-weight: bolder;
+}
+ol{
+    margin-top: 0;
+}
+ol h2{
+    color: black;
+    margin: 0 0 10px 0;
+    padding: 0;
+    
+}
+li{
+    font-weight: bold;
+    color: #363636;
+}
+ol li:nth-child(2){
+    color: black;
+
+}
 .save-button{
     color: white;
     background-color: black;
-    border: 4px solid grey;
+    border: 4px solid #363636;
     width: 140px;
     height: 40px;
     position: absolute;
@@ -33,7 +56,7 @@ button{
 .save-input{
     color: white;
     background-color: black;
-    border: 4px solid grey;
+    border: 4px solid #363636;
     width: 132px;
     height: 32px;
     position: absolute;
