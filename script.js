@@ -111,28 +111,24 @@ const displayController = (() => {
 
     }
     function showScores(scoresList) {
-        console.log(scoresList);
-        
         const exists = document.querySelector('ol');
         if(exists){
             exists.parentElement.removeChild(exists);
         }
 
         const ol = document.createElement('ol');
-        ol.textContent = 'Best Scores';
-
+        const h2 = document.createElement('h2');
+        h2.textContent = 'Best Scores';
+        ol.appendChild(h2);
         scoresList.forEach((player)=>{
-            console.log(player.PlayerName);
             const li = document.createElement('li');
             li.textContent = player.PlayerName + ' ' + player.PlayerScore + ' pts.';
             ol.appendChild(li)
-
         })
         const main = document.querySelector('main');
         main.appendChild(ol);
             
     }
-
     return {
         setBackground,
         createSquare,
@@ -326,18 +322,6 @@ const Firebase = (() => {
             })
             displayController.showScores(bestScores)
         })
-        
-        // Real Time Addition 
-        // db.collection('snake-scores').limit(10).orderBy('OrderAux').onSnapshot(snapshot => {
-        //     let changes = snapshot.docChanges();
-        //     changes.forEach(change => {
-        //         if (change.type == 'added') {
-        //             displayController.showScores(change.doc.data());
-        //         }
-        //     })
-        // })
-
-
     }
     function addScore(name, score) {
         if (!name && !score)
@@ -359,7 +343,6 @@ let snake = Snake();
 
 window.addEventListener('keydown', (e) => {
     snake.changeDirection(e);
-
 });
 displayController.setBackground();
 displayController.borders();
