@@ -1,5 +1,6 @@
 "use strict"
 const canvas = document.querySelector("#snake-canvas");
+const HTMLapple = document.querySelector('#Apple')
 let ctx = canvas.getContext('2d');
 const body = document.querySelector('body');
 const displayController = (() => {
@@ -11,7 +12,12 @@ const displayController = (() => {
         ctx.fillStyle = color;
         ctx.fillRect(px, py, 20, 20)
     }
-    function writePontuation(score=0) {
+    
+    function createApple(px, py){
+        ctx.drawImage(HTMLapple, px, py, 20, 20);
+    }
+
+    function writeScore(score = 0) {
         createSquare('#363636', 200, 0);
         createSquare('#363636', 220, 0);
         createSquare('#363636', 240, 0);
@@ -65,11 +71,9 @@ const displayController = (() => {
                         restartBtn.classList.add('hide');
                         inputName.classList.add('hide');
 
-
                         displayController.setBackground();
                         displayController.borders();
                         game.restart(snake);
-
                     }
                 }
             })
@@ -85,7 +89,7 @@ const displayController = (() => {
         restartBtn.textContent = 'restart';
         main.appendChild(restartBtn);
 
-        writePontuation(game.pontuation);
+        writeScore(game.pontuation);
 
 
         restartBtn.addEventListener('click', () => {
@@ -117,8 +121,9 @@ const displayController = (() => {
         createSquare,
         borders,
         endGame,
-        writePontuation,
+        writeScore,
         showScores,
+        createApple
     }
 })()
 
@@ -142,7 +147,7 @@ const game = (() => {
     }
 
     function play() {
-        displayController.writePontuation();
+        displayController.writeScore();
         setInterval(() => { snake.move() }, gameVel);
     }
     function createApple() {
@@ -159,7 +164,8 @@ const game = (() => {
             }
         } while (notValidPlace)
 
-        displayController.createSquare('red', ax, ay);
+        // displayController.createSquare('red', ax, ay);
+        displayController.createApple(ax, ay);
     }
     return {
         play,
@@ -196,47 +202,46 @@ const Snake = () => {
     const setAte = (a) => ate = a;
 
     const changeDirection = (e) => {
-        
+
         if (e.code === 'ArrowLeft' && moveComplete) {
             if (dx != vel) {
                 dx = (-1 * vel);
                 console.log('left')
                 moveComplete = false;
             }
-            else{
+            else {
                 console.log('Sem ré!')
             }
             dy = 0;
-            
+
         }
         else if (e.code === 'ArrowRight' && moveComplete) {
-            if (dx != (-1 * vel))
-            {
+            if (dx != (-1 * vel)) {
                 dx = (vel)
                 console.log('right')
                 moveComplete = false;
-            }else{
+            } else {
                 console.log('Sem ré!')
             }
             dy = 0;
-            
+
         }
         else if (e.code === 'ArrowUp' && moveComplete) {
-            if (dy != vel){
+            if (dy != vel) {
                 dy = (-1 * vel);
                 console.log('up');
                 moveComplete = false;
-            }else{
+            } else {
                 console.log('Sem ré!')
             }
             dx = 0;
         }
         else if (e.code === 'ArrowDown' && moveComplete) {
-            if (dy != (-1 * vel)){
+            if (dy != (-1 * vel)) {
                 dy = (vel);
                 console.log('down');
                 moveComplete = false;
-            }else{
+            } else {
                 console.log('Sem ré!')
             }
             dx = 0;
@@ -288,7 +293,7 @@ const Snake = () => {
         if (headX == game.getAppleX() && headY == game.getAppleY()) {
             ate = true;
             game.pontuation += 10;
-            displayController.writePontuation(game.pontuation);
+            displayController.writeScore(game.pontuation);
         }
         displayController.createSquare('#2ae600', snake.getHeadX(), snake.getHeadY());
 
@@ -346,10 +351,10 @@ const Firebase = (() => {
 
 let snake = Snake();
 
-window.addEventListener('keydown', (e)=>{
+window.addEventListener('keydown', (e) => {
     console.log('key press');
     snake.changeDirection(e);
-    
+
 });
 displayController.setBackground();
 displayController.borders();
