@@ -74,6 +74,7 @@ const displayController = (() => {
                         displayController.setBackground();
                         displayController.borders();
                         game.restart(snake);
+                        Firebase.showScores();
                     }
                 }
             })
@@ -109,11 +110,27 @@ const displayController = (() => {
 
 
     }
-    function showScores(player) {
-        const scores = document.querySelector('ol');
-        const li = document.createElement('li');
-        li.textContent = player.PlayerName + ' ' + player.PlayerScore + ' pts.';
-        scores.appendChild(li)
+    function showScores(scoresList) {
+        console.log(scoresList);
+        
+        const exists = document.querySelector('ol');
+        if(exists){
+            exists.parentElement.removeChild(exists);
+        }
+
+        const ol = document.createElement('ol');
+        ol.textContent = 'Best Scores';
+
+        scoresList.forEach((player)=>{
+            console.log(player.PlayerName);
+            const li = document.createElement('li');
+            li.textContent = player.PlayerName + ' ' + player.PlayerScore + ' pts.';
+            ol.appendChild(li)
+
+        })
+        const main = document.querySelector('main');
+        main.appendChild(ol);
+            
     }
 
     return {
@@ -205,11 +222,7 @@ const Snake = () => {
         if ((e.code === 'ArrowLeft' || e.code === 'KeyA') && moveComplete) {
             if (dx != vel) {
                 dx = (-1 * vel);
-                console.log('left')
                 moveComplete = false;
-            }
-            else {
-                console.log('Sem ré!')
             }
             dy = 0;
 
@@ -217,10 +230,7 @@ const Snake = () => {
         else if ( (e.code === 'ArrowRight'|| e.code === 'KeyD') && moveComplete) {
             if (dx != (-1 * vel)) {
                 dx = (vel)
-                console.log('right')
                 moveComplete = false;
-            } else {
-                console.log('Sem ré!')
             }
             dy = 0;
 
@@ -228,20 +238,14 @@ const Snake = () => {
         else if ( (e.code === 'ArrowUp'|| e.code === 'KeyW') && moveComplete) {
             if (dy != vel) {
                 dy = (-1 * vel);
-                console.log('up');
                 moveComplete = false;
-            } else {
-                console.log('Sem ré!')
             }
             dx = 0;
         }
         else if ( (e.code === 'ArrowDown'|| e.code === 'KeyS') && moveComplete) {
             if (dy != (-1 * vel)) {
                 dy = (vel);
-                console.log('down');
                 moveComplete = false;
-            } else {
-                console.log('Sem ré!')
             }
             dx = 0;
         }
@@ -315,20 +319,23 @@ const Snake = () => {
 
 const Firebase = (() => {
     function showScores() {
-        // static adition
-        // db.collection('snake-scores').get().then( (snapshot)=>{
-        //     snapshot.docs.forEach( (doc)=>{
-        //         displayController.showScores(doc.data())
+        let bestScores = []
+        db.collection('snake-scores').orderBy('OrderAux').limit(10).get().then( (snapshot)=>{
+            snapshot.docs.forEach( (doc)=>{
+                bestScores.push(doc.data())
+            })
+            displayController.showScores(bestScores)
+        })
+        
+        // Real Time Addition 
+        // db.collection('snake-scores').limit(10).orderBy('OrderAux').onSnapshot(snapshot => {
+        //     let changes = snapshot.docChanges();
+        //     changes.forEach(change => {
+        //         if (change.type == 'added') {
+        //             displayController.showScores(change.doc.data());
+        //         }
         //     })
         // })
-        db.collection('snake-scores').limit(10).orderBy('OrderAux').onSnapshot(snapshot => {
-            let changes = snapshot.docChanges();
-            changes.forEach(change => {
-                if (change.type == 'added') {
-                    displayController.showScores(change.doc.data());
-                }
-            })
-        })
 
 
     }
@@ -351,7 +358,6 @@ const Firebase = (() => {
 let snake = Snake();
 
 window.addEventListener('keydown', (e) => {
-    console.log('key press');
     snake.changeDirection(e);
 
 });
