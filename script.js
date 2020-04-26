@@ -202,8 +202,7 @@ const Snake = () => {
     const setAte = (a) => ate = a;
 
     const changeDirection = (e) => {
-
-        if (e.code === 'ArrowLeft' && moveComplete) {
+        if ((e.code === 'ArrowLeft' || e.code === 'KeyA') && moveComplete) {
             if (dx != vel) {
                 dx = (-1 * vel);
                 console.log('left')
@@ -215,7 +214,7 @@ const Snake = () => {
             dy = 0;
 
         }
-        else if (e.code === 'ArrowRight' && moveComplete) {
+        else if ( (e.code === 'ArrowRight'|| e.code === 'KeyD') && moveComplete) {
             if (dx != (-1 * vel)) {
                 dx = (vel)
                 console.log('right')
@@ -226,7 +225,7 @@ const Snake = () => {
             dy = 0;
 
         }
-        else if (e.code === 'ArrowUp' && moveComplete) {
+        else if ( (e.code === 'ArrowUp'|| e.code === 'KeyW') && moveComplete) {
             if (dy != vel) {
                 dy = (-1 * vel);
                 console.log('up');
@@ -236,7 +235,7 @@ const Snake = () => {
             }
             dx = 0;
         }
-        else if (e.code === 'ArrowDown' && moveComplete) {
+        else if ( (e.code === 'ArrowDown'|| e.code === 'KeyS') && moveComplete) {
             if (dy != (-1 * vel)) {
                 dy = (vel);
                 console.log('down');
