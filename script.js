@@ -10,21 +10,26 @@ const displayController = (() => {
     }
     function createSquare(color, px, py) {
         ctx.fillStyle = color;
-        ctx.fillRect(px, py, 20, 20)
+        ctx.fillRect(px+1, py+1, 18, 18)
     }
     
     function createApple(px, py){
-        ctx.drawImage(HTMLapple, px, py, 20, 20);
+        ctx.drawImage(HTMLapple, px+1, py+1, 18, 18);
     }
 
     function writeScore(score = 0) {
-        createSquare('#363636', 200, 0);
-        createSquare('#363636', 220, 0);
-        createSquare('#363636', 240, 0);
-        createSquare('#363636', 260, 0);
-        createSquare('#363636', 280, 0);
-        createSquare('#363636', 300, 0);
-
+        
+        ctx.beginPath();
+        ctx.font = '20px Arial';
+        ctx.fillStyle = 'black'
+        ctx.fillRect(200, 0, 120, 20);
+        
+        displayController.createSquare('#363636', 200, 0);
+        displayController.createSquare('#363636', 220, 0);
+        displayController.createSquare('#363636', 240, 0);
+        displayController.createSquare('#363636', 260, 0);
+        displayController.createSquare('#363636', 280, 0);
+        displayController.createSquare('#363636', 300, 0);
 
         ctx.beginPath();
         ctx.font = '20px Arial';
@@ -119,6 +124,7 @@ const displayController = (() => {
         const ol = document.createElement('ol');
         const h2 = document.createElement('h2');
         h2.textContent = 'Best Scores';
+        
         ol.appendChild(h2);
         scoresList.forEach((player)=>{
             const li = document.createElement('li');
