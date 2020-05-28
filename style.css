@@ -8,8 +8,7 @@ body{
     font-family: 'Arvo', Georgia, Times;
 }
 main{
-    display: grid;
-    grid-template-columns: 3fr 1fr;
+    display: flex;
 }
 button{
     color: white;
